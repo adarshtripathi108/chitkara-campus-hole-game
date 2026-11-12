@@ -298,6 +298,16 @@ addEatable(kalpana, 10, 550, 'Kalpana Hostel');
 const culinary = building('CULINARY ARTS', 42, -8, 12, 7, 8, 0x74b9ff);
 addEatable(culinary, 7, 400, 'Culinary Arts');
 
+// Step 17: Main Gate — Gate 1, south entrance, two pillars + top beam.
+// The hole spawns just inside it, like the real entrance road from NH-21A.
+[[-4, 36], [4, 36]].forEach(function(p){
+  const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.5, 5, 1.5), new THREE.MeshLambertMaterial({color:0xe8dcc3}));
+  pillar.position.set(p[0], 2.5, p[1]); scene.add(pillar);
+});
+const beam = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 1.5), new THREE.MeshLambertMaterial({color:0x8b0000}));
+beam.position.set(0, 5.5, 36); scene.add(beam);
+const gateLabel = label('MAIN GATE'); gateLabel.position.set(0, 7, 36); gateLabel.scale.set(12, 3, 1); scene.add(gateLabel);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
