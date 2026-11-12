@@ -197,6 +197,27 @@ photoLoader.load(
   function(){ /* photo failed — keep grey billboard, game still works */ }
 );
 
+// Step 10: Tripathi's own photos — panorama (May 2016, Google Maps) + bridge.
+// These two files live in photos/ next to index.html:
+//   photos/campus-panorama-may2016.jpg — wide panorama, main buildings + CHITKARA UNIVERSITY bridge, cars parked
+//   photos/campus-bridge.jpg — the CHITKARA UNIVERSITY walkway/bridge, front view
+// NOTE: binary photo files cannot be pushed by Muse's GitHub connector (it only
+// pushes text files), so the photos must be uploaded once via the GitHub website
+// into the photos/ folder — then these relative paths load in the game.
+// Until then the billboards stay grey; the game still works.
+function userPhotoBillboard(relPath, x, y, z, w, h, labelText){
+  const mat = new THREE.SpriteMaterial({color:0xcccccc});
+  const spr = new THREE.Sprite(mat);
+  spr.scale.set(w, h, 1); spr.position.set(x, y, z); scene.add(spr);
+  const lab = label(labelText); lab.position.set(x, y + h/2 + 2, z); lab.scale.set(14, 3.5, 1); scene.add(lab);
+  photoLoader.load(relPath,
+    function(tex){ mat.map = tex; mat.color.set(0xffffff); mat.needsUpdate = true; },
+    undefined, function(){ /* photo file not in repo yet — grey billboard, game still works */ });
+  return spr;
+}
+userPhotoBillboard('photos/campus-panorama-may2016.jpg', 0, 6, -32, 30, 11, 'YOUR PHOTO - CAMPUS PANORAMA');
+userPhotoBillboard('photos/campus-bridge.jpg', 25, 5, 2, 14, 9, 'YOUR PHOTO - CHITKARA BRIDGE');
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
