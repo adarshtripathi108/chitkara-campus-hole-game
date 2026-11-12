@@ -251,6 +251,38 @@ photoLoader.load(
 const kalamLabel = label('REAL PHOTO - GANDHI + KALAM BLOCK');
 kalamLabel.position.set(25, 11, -19); kalamLabel.scale.set(16, 4, 1); scene.add(kalamLabel);
 
+// Step 13: Pharma Block + full Sports Zone, one complete feature commit.
+// (Tripathi's feedback 2026-11-12: one tiny thing per commit is not proper
+// contributing — from now on, complete features per commit, not single items.)
+// Pharma Block (east side), Football Ground, Basketball Court, Volleyball
+// Court and a Chess area — all verified campus sports, placement approximate.
+const pharma = building('PHARMA BLOCK', 42, 12, 16, 9, 10, 0xffeaa7);
+addEatable(pharma, 9, 500, 'Pharma Block');
+// Football ground — green oval with a white centre line
+const football = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshLambertMaterial({color:0x2e8b57}));
+football.rotation.x = -Math.PI/2; football.scale.set(13, 7, 1); football.position.set(-15, 0.03, 33); scene.add(football);
+const fLine = new THREE.Mesh(new THREE.PlaneGeometry(1, 14), new THREE.MeshLambertMaterial({color:0xffffff}));
+fLine.rotation.x = -Math.PI/2; fLine.position.set(-15, 0.04, 33); scene.add(fLine);
+const fLabel = label('FOOTBALL GROUND'); fLabel.position.set(-15, 2, 33); fLabel.scale.set(14, 3.5, 1); scene.add(fLabel);
+// Basketball court — orange rectangle with a centre line
+const basket = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), new THREE.MeshLambertMaterial({color:0xe67e22}));
+basket.rotation.x = -Math.PI/2; basket.position.set(35, 0.03, 30); scene.add(basket);
+const bLine = new THREE.Mesh(new THREE.PlaneGeometry(1, 7), new THREE.MeshLambertMaterial({color:0xffffff}));
+bLine.rotation.x = -Math.PI/2; bLine.position.set(35, 0.04, 30); scene.add(bLine);
+const bLabel = label('BASKETBALL COURT'); bLabel.position.set(35, 2, 30); bLabel.scale.set(14, 3.5, 1); scene.add(bLabel);
+// Volleyball court — sand-coloured rectangle
+const volley = new THREE.Mesh(new THREE.PlaneGeometry(10, 6), new THREE.MeshLambertMaterial({color:0xf5deb3}));
+volley.rotation.x = -Math.PI/2; volley.position.set(8, 0.03, 33); scene.add(volley);
+const vLabel = label('VOLLEYBALL COURT'); vLabel.position.set(8, 2, 33); vLabel.scale.set(14, 3.5, 1); scene.add(vLabel);
+// Chess area — board + 4 pieces
+const board = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.MeshLambertMaterial({color:0xdddddd}));
+board.rotation.x = -Math.PI/2; board.position.set(-5, 0.03, 20); scene.add(board);
+[[-7,18,0x111111],[-3,18,0xffffff],[-7,22,0xffffff],[-3,22,0x111111]].forEach(function(p){
+  const piece = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.6,1.2,10), new THREE.MeshLambertMaterial({color:p[2]}));
+  piece.position.set(p[0], 0.6, p[1]); scene.add(piece); addEatable(piece, 1, 10, 'Chess piece');
+});
+const cLabel = label('CHESS AREA'); cLabel.position.set(-5, 2, 20); cLabel.scale.set(10, 2.5, 1); scene.add(cLabel);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
