@@ -218,6 +218,17 @@ function userPhotoBillboard(relPath, x, y, z, w, h, labelText){
 userPhotoBillboard('photos/campus-panorama-may2016.jpg', 0, 6, -32, 30, 11, 'YOUR PHOTO - CAMPUS PANORAMA');
 userPhotoBillboard('photos/campus-bridge.jpg', 25, 5, 2, 14, 9, 'YOUR PHOTO - CHITKARA BRIDGE');
 
+// Step 11: Cricket Ground — confirmed by Tripathi (his "h" = haan, 2026-11-12 13:22 IST).
+// Google Maps satellite labels it north of the main cluster, NE of it is Bose Hostel.
+// No ground-level front photo of it was found on Maps, so it is a flat green oval
+// with a brown pitch strip, not a photo billboard. Placement is approximate.
+const cricket = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.MeshLambertMaterial({color:0x4caf50}));
+cricket.rotation.x = -Math.PI/2; cricket.scale.set(14, 9, 1); cricket.position.set(0, 0.03, -36); scene.add(cricket);
+const pitch = new THREE.Mesh(new THREE.PlaneGeometry(10, 2), new THREE.MeshLambertMaterial({color:0x8b5a2b}));
+pitch.rotation.x = -Math.PI/2; pitch.position.set(0, 0.04, -36); scene.add(pitch);
+const cricketLabel = label('CRICKET GROUND');
+cricketLabel.position.set(0, 2, -36); cricketLabel.scale.set(14, 3.5, 1); scene.add(cricketLabel);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
