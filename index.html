@@ -89,6 +89,12 @@ addEatable(kalam, 8, 450, 'Kalam Block');
 const tagore = building('TAGORE LIBRARY', -25, 18, 16, 10, 10, 0xf5e6c8);
 addEatable(tagore, 9, 500, 'Tagore Library');
 
+// Step 6: Hostels — Bose (2nd year+, 5 floors) and Aryabhatta (1st year, 5 floors)
+const bose = building('BOSE HOSTEL', 40, -25, 14, 12, 10, 0xffeaa7);
+addEatable(bose, 10, 550, 'Bose Hostel');
+const aryabhatta = building('ARYABHATTA HOSTEL', -42, 24, 14, 12, 10, 0x74b9ff);
+addEatable(aryabhatta, 10, 550, 'Aryabhatta Hostel');
+
 // Small eatables: trees, benches, dustbins
 function tree(x,z){
   const g=new THREE.Group();
