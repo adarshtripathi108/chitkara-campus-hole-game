@@ -229,6 +229,28 @@ pitch.rotation.x = -Math.PI/2; pitch.position.set(0, 0.04, -36); scene.add(pitch
 const cricketLabel = label('CRICKET GROUND');
 cricketLabel.position.set(0, 2, -36); cricketLabel.scale.set(14, 3.5, 1); scene.add(cricketLabel);
 
+// Step 12: REAL PHOTO — Gandhi Block + Kalam Block, front view.
+// Photo: Collegedunia review photo, Feb 2023 (IMG_20230225_133850).
+// Left building reads "GANDHI block" with the Indian flag on top;
+// right building reads "KALAM block" on its roof; campus cart + cars in front.
+// This is the first real front photo of Kalam Block — Maps only had its side wall.
+// Source: https://collegedunia.com/university/25552-chitkara-university-solan
+// Note: Collegedunia sends no Access-Control-Allow-Origin header, so in some
+// browsers this billboard may stay grey — same limit as the Step 8 photo.
+const kalamMat = new THREE.SpriteMaterial({color:0xcccccc});
+const kalamPhoto = new THREE.Sprite(kalamMat);
+kalamPhoto.scale.set(16, 10, 1);
+kalamPhoto.position.set(25, 5, -19);
+scene.add(kalamPhoto);
+photoLoader.load(
+  'https://image-static.collegedunia.com/public/reviewPhotos/365895/IMG_20230225_133850.jpg',
+  function(tex){ kalamMat.map = tex; kalamMat.color.set(0xffffff); kalamMat.needsUpdate = true; },
+  undefined,
+  function(){ /* photo failed — keep grey billboard, game still works */ }
+);
+const kalamLabel = label('REAL PHOTO - GANDHI + KALAM BLOCK');
+kalamLabel.position.set(25, 11, -19); kalamLabel.scale.set(16, 4, 1); scene.add(kalamLabel);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
