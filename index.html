@@ -311,6 +311,22 @@ const gateLabel = label('MAIN GATE'); gateLabel.position.set(0, 7, 36); gateLabe
 // Step 18: second car — white, parked on the road near Kalam Block.
 car(28, 3, 0xffffff);
 
+// Step 19: bike — parked near the Academic Block, like the bikes students ride on campus.
+function bike(x, z, color){
+  const g = new THREE.Group();
+  const wheelMat = new THREE.MeshLambertMaterial({color:0x111111});
+  [[-0.9, 0], [0.9, 0]].forEach(function(p){
+    const w = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.08, 8, 16), wheelMat);
+    w.position.set(p[0], 0.35, p[1]); g.add(w);
+  });
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.08, 0.08), new THREE.MeshLambertMaterial({color}));
+  frame.position.y = 0.6; g.add(frame);
+  const seat = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.2), new THREE.MeshLambertMaterial({color:0x111111}));
+  seat.position.set(-0.6, 0.85, 0); g.add(seat);
+  g.position.set(x, 0, z); addEatable(g, 1, 20, 'Bike');
+}
+bike(-18, -4, 0x0000ff);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
