@@ -288,6 +288,11 @@ const cLabel = label('CHESS AREA'); cLabel.position.set(-5, 2, 20); cLabel.scale
 const gandhi = building('GANDHI BLOCK', 0, -12, 16, 8, 12, 0xe8dcc3);
 addEatable(gandhi, 8, 450, 'Gandhi Block');
 
+// Step 15: Kalpana Hostel — satellite/map label, NW of the cricket ground,
+// next to Gargi Hostel. No front photo found on Maps for it.
+const kalpana = building('KALPANA HOSTEL', -42, -32, 12, 11, 10, 0xf5e6c8);
+addEatable(kalpana, 10, 550, 'Kalpana Hostel');
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
