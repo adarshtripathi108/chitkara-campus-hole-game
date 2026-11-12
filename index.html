@@ -283,6 +283,11 @@ board.rotation.x = -Math.PI/2; board.position.set(-5, 0.03, 20); scene.add(board
 });
 const cLabel = label('CHESS AREA'); cLabel.position.set(-5, 2, 20); cLabel.scale.set(10, 2.5, 1); scene.add(cLabel);
 
+// Step 14: Gandhi Block — seen in the Step 12 real photo (left building,
+// "GANDHI block" in red, Indian flag on top), between Academic and Kalam.
+const gandhi = building('GANDHI BLOCK', 0, -12, 16, 8, 12, 0xe8dcc3);
+addEatable(gandhi, 8, 450, 'Gandhi Block');
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
