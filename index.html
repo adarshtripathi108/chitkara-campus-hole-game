@@ -134,6 +134,25 @@ function car(x,z,color){
 }
 car(10, 3, 0xff0000);
 
+// Step 7: university bus — yellow, on the road outside the gate
+function bus(x,z,color){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.BoxGeometry(8,2.2,2.4), new THREE.MeshLambertMaterial({color}));
+  body.position.y=1.4; body.castShadow=true; g.add(body);
+  const winMat=new THREE.MeshLambertMaterial({color:0x223344});
+  for(let i=0;i<4;i++){
+    const win=new THREE.Mesh(new THREE.PlaneGeometry(1.4,0.9), winMat);
+    win.position.set(-3+i*2, 1.8, 1.21); g.add(win);
+  }
+  const wheelMat=new THREE.MeshLambertMaterial({color:0x111111});
+  [[-2.5,1.2],[2.5,1.2],[-2.5,-1.2],[2.5,-1.2]].forEach(p=>{
+    const w=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,0.35,12), wheelMat);
+    w.rotation.x=Math.PI/2; w.position.set(p[0],0.55,p[1]); g.add(w);
+  });
+  g.position.set(x,0,z); addEatable(g,4,150,'Bus');
+}
+bus(-15, 0, 0xffcc00);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
