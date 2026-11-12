@@ -176,6 +176,27 @@ const photoLabel = label('REAL PHOTO - CHITKARA UNIVERSITY');
 photoLabel.position.set(0, 10, -25); photoLabel.scale.set(14, 3.5, 1);
 scene.add(photoLabel);
 
+// Step 9: Gargi Hostel — real photo found, same HP campus.
+// Photo: Gargi Hostel exterior, beige 5-floor building, "GARGI hostel" in red.
+// Source: CollegeDekho, Chitkara University Himachal Pradesh campus page.
+// https://www.collegedekho.com/colleges/chitkara-university-himachal-pradesh/campus
+// Note: this is Gargi Hostel, NOT Bose/Aryabhatta — labelled correctly.
+// The second hostel photo found was a hostel ROOM interior (beds/desks),
+// not a building exterior, so it is not used as a building photo.
+const gargi = building('GARGI HOSTEL', -42, -20, 14, 12, 10, 0xe8dcc3);
+addEatable(gargi, 10, 550, 'Gargi Hostel');
+const gargiMat = new THREE.SpriteMaterial({color:0xcccccc});
+const gargiPhoto = new THREE.Sprite(gargiMat);
+gargiPhoto.scale.set(12, 8, 1);
+gargiPhoto.position.set(-42, 5, -13);
+scene.add(gargiPhoto);
+photoLoader.load(
+  'https://media.collegedekho.com/media/cms/ck5/chitkara%20hostel%201%20.jpg',
+  function(tex){ gargiMat.map = tex; gargiMat.color.set(0xffffff); gargiMat.needsUpdate = true; },
+  undefined,
+  function(){ /* photo failed — keep grey billboard, game still works */ }
+);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
