@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chitkara Campus Hole Game</title>
+<style>
+  body { margin:0; overflow:hidden; font-family: Arial, sans-serif; background:#87ceeb; }
+  #hud { position:fixed; top:10px; left:10px; right:10px; display:flex; gap:10px; z-index:10; pointer-events:none; }
+  .pill { background:rgba(0,0,0,.75); color:#fff; padding:8px 14px; border-radius:20px; font-weight:bold; }
+  #help { position:fixed; bottom:10px; left:10px; background:rgba(0,0,0,.65); color:#fff; padding:8px 12px; border-radius:10px; font-size:13px; z-index:10; }
+  #over { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:20; }
+  #over div { background:#fff; padding:24px; border-radius:14px; text-align:center; max-width:320px; }
+  button { padding:10px 18px; font-size:16px; border:0; border-radius:8px; background:#000; color:#fff; cursor:pointer; }
+</style>
+</head>
+<body>
+<div id="hud">
+  <div class="pill">Score: <span id="score">0</span></div>
+  <div class="pill">Hole: <span id="size">1.5</span>m</div>
+  <div class="pill">Time: <span id="time">120</span>s</div>
+  <div class="pill">Eaten: <span id="eaten">0</span></div>
+</div>
+<div id="help">WASD / Arrow keys or drag to move the hole &bull; Eat small things first, grow, then eat the Academic Block!</div>
+<div id="over"><div><h2 id="overTitle">Time up!</h2><p id="overText"></p><button onclick="location.reload()">Play again</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Chitkara Campus Hole Game — Step 2: base map + Academic Block
+// Real campus: 17 acres, Atal Shiksha Kunj, Barotiwala, Baddi, HP.
+// Step 3 will add the first car. Kalam Block, Tagore Library, hostels, bus come one by one after that.
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87ceeb);
+scene.fog = new THREE.Fog(0x87ceeb, 90, 180);
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 500);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
+scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+sun.position.set(30, 60, 20); sun.castShadow = true;
+scene.add(sun);
+
+// Ground — compact campus, like the real one
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(120, 80), new THREE.MeshLambertMaterial({color:0x6ab04c}));
+ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+// Roads
+function road(w,d,x,z){ const r=new THREE.Mesh(new THREE.PlaneGeometry(w,d), new THREE.MeshLambertMaterial({color:0x444444})); r.rotation.x=-Math.PI/2; r.position.set(x,0.02,z); scene.add(r); }
+road(120,6,0,0); road(6,80,0,0);
+
+function label(text){
+  const c=document.createElement('canvas'); c.width=512; c.height=128;
+  const g=c.getContext('2d'); g.fillStyle='rgba(0,0,0,0.75)'; g.fillRect(0,0,512,128);
+  g.fillStyle='#fff'; g.font='bold 44px Arial'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,256,64);
+  const t=new THREE.CanvasTexture(c);
+  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:t}));
+  s.scale.set(16,4,1); return s;
+}
+function building(name,x,z,w,h,d,color){
+  const grp=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshLambertMaterial({color}));
+  body.position.y=h/2; body.castShadow=true; grp.add(body);
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(w+1,0.6,d+1), new THREE.MeshLambertMaterial({color:0x8b0000}));
+  roof.position.y=h+0.3; grp.add(roof);
+  // windows
+  const winMat=new THREE.MeshLambertMaterial({color:0x223344});
+  for(let i=0;i<4;i++) for(let j=0;j<2;j++){
+    const win=new THREE.Mesh(new THREE.PlaneGeometry(2,1.4), winMat);
+    win.position.set(-w/2+3+i*4.5, 2.5+j*3, d/2+0.06); grp.add(win);
+  }
+  const lab=label(name); lab.position.y=h+4; grp.add(lab);
+  grp.position.set(x,0,z); scene.add(grp); return grp;
+}
+
+const eatables=[];
+function addEatable(mesh,size,score,name){
+  mesh.userData={size,score,name}; eatables.push(mesh); scene.add(mesh);
+}
+
+// Step 2 building: Academic Block
+const academic = building('ACADEMIC BLOCK', -25, -12, 20, 9, 12, 0xe8dcc3);
+addEatable(academic, 9, 500, 'Academic Block');
+
+// Small eatables: trees, benches, dustbins
+function tree(x,z){
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.4,1.5,8), new THREE.MeshLambertMaterial({color:0x8b5a2b}));
+  trunk.position.y=0.75; g.add(trunk);
+  const top=new THREE.Mesh(new THREE.ConeGeometry(1.4,3,8), new THREE.MeshLambertMaterial({color:0x228b22}));
+  top.position.y=3; top.castShadow=true; g.add(top);
+  g.position.set(x,0,z); addEatable(g,1.5,10,'Tree');
+}
+function bench(x,z){
+  const g=new THREE.Group();
+  const seat=new THREE.Mesh(new THREE.BoxGeometry(2,0.2,0.8), new THREE.MeshLambertMaterial({color:0x8b4513}));
+  seat.position.y=0.5; g.add(seat);
+  g.position.set(x,0,z); addEatable(g,1,5,'Bench');
+}
+function bin(x,z){
+  const m=new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.4,1,10), new THREE.MeshLambertMaterial({color:0x2f7d32}));
+  m.position.set(x,0.5,z); addEatable(m,0.8,5,'Dustbin');
+}
+tree(-10,-18); tree(8,-20); tree(20,-8); tree(-8,14); tree(15,18); tree(28,10); tree(-35,15); tree(5,5);
+bench(-12,8); bench(12,-12); bench(22,16);
+bin(-5,-5); bin(18,2); bin(-18,18);
+
+// The hole
+let holeRadius=1.5;
+const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
+hole.rotation.x=-Math.PI/2; hole.position.set(0,0.06,10); scene.add(hole);
+const ring=new THREE.Mesh(new THREE.RingGeometry(1,1.15,48), new THREE.MeshBasicMaterial({color:0xffffff, side:THREE.DoubleSide}));
+ring.rotation.x=-Math.PI/2; ring.position.y=0.07; scene.add(ring);
+function updateHole(){ hole.scale.set(holeRadius,holeRadius,1); ring.scale.set(holeRadius,holeRadius,1); ring.position.set(hole.position.x,0.07,hole.position.z); }
+updateHole();
+
+// Controls: WASD / arrows + mouse / touch drag
+const keys={};
+addEventListener('keydown',e=>keys[e.key.toLowerCase()]=true);
+addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+let target=null;
+function pointerGround(e){
+  const x=(e.clientX/innerWidth)*2-1, y=-(e.clientY/innerHeight)*2+1;
+  const v=new THREE.Vector3(x,y,0.5).unproject(camera);
+  const dir=v.sub(camera.position).normalize();
+  const t=-camera.position.y/dir.y;
+  return new THREE.Vector3(camera.position.x+dir.x*t,0,camera.position.z+dir.z*t);
+}
+addEventListener('pointerdown',e=>{ target=pointerGround(e); });
+addEventListener('pointermove',e=>{ if(e.buttons) target=pointerGround(e); });
+addEventListener('pointerup',()=>target=null);
+
+let score=0, eatenCount=0, timeLeft=120, over=false;
+const scoreEl=document.getElementById('score'), sizeEl=document.getElementById('size'),
+      timeEl=document.getElementById('time'), eatenEl=document.getElementById('eaten');
+function endGame(title){
+  over=true;
+  document.getElementById('overTitle').textContent=title;
+  document.getElementById('overText').textContent='Score: '+score+' • Eaten: '+eatenCount+' • Hole size: '+holeRadius.toFixed(1)+'m';
+  document.getElementById('over').style.display='flex';
+}
+setInterval(()=>{ if(!over){ timeLeft--; timeEl.textContent=timeLeft; if(timeLeft<=0) endGame('Time up!'); } },1000);
+
+function animate(){
+  requestAnimationFrame(animate);
+  if(!over){
+    const sp=0.35;
+    if(keys['w']||keys['arrowup']) hole.position.z-=sp;
+    if(keys['s']||keys['arrowdown']) hole.position.z+=sp;
+    if(keys['a']||keys['arrowleft']) hole.position.x-=sp;
+    if(keys['d']||keys['arrowright']) hole.position.x+=sp;
+    if(target){
+      const dx=target.x-hole.position.x, dz=target.z-hole.position.z;
+      const d=Math.hypot(dx,dz);
+      if(d>0.3){ hole.position.x+=dx/d*sp; hole.position.z+=dz/d*sp; }
+    }
+    hole.position.x=Math.max(-58,Math.min(58,hole.position.x));
+    hole.position.z=Math.max(-38,Math.min(38,hole.position.z));
+    updateHole();
+    // Eat check
+    for(let i=eatables.length-1;i>=0;i--){
+      const m=eatables[i], s=m.userData.size;
+      const dx=m.position.x-hole.position.x, dz=m.position.z-hole.position.z;
+      if(Math.hypot(dx,dz) < holeRadius + s*0.4 && s <= holeRadius*1.3){
+        scene.remove(m); eatables.splice(i,1);
+        score+=m.userData.score; eatenCount++;
+        holeRadius=Math.min(12,holeRadius + s*0.06);
+        scoreEl.textContent=score; eatenEl.textContent=eatenCount;
+        sizeEl.textContent=holeRadius.toFixed(1);
+        if(m.userData.name==='Academic Block') endGame('You ate the Academic Block!');
+      }
+    }
+    camera.position.set(hole.position.x, 42, hole.position.z+32);
+    camera.lookAt(hole.position.x, 0, hole.position.z);
+  }
+  renderer.render(scene,camera);
+}
+animate();
+addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); });
+</script>
+</body>
+</html>
