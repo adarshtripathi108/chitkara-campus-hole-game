@@ -153,6 +153,29 @@ function bus(x,z,color){
 }
 bus(-15, 0, 0xffcc00);
 
+// Step 8: real campus photo billboard — first real photo in the game.
+// Photo: Chitkara University Baddi campus, main building + bridge.
+// Source: https://zollege.in/university/184873-chitkara-university-solan
+// This is a public web photo, not a photo taken on campus. For a GTA-style
+// real look, the best photos are the ones Tripathi takes himself on campus,
+// one front photo per building — those will replace these billboards one by one.
+const photoLoader = new THREE.TextureLoader();
+photoLoader.setCrossOrigin('anonymous');
+const photoMat = new THREE.SpriteMaterial({color:0xcccccc});
+const photoBillboard = new THREE.Sprite(photoMat);
+photoBillboard.scale.set(18, 8, 1);
+photoBillboard.position.set(0, 5, -25);
+scene.add(photoBillboard);
+photoLoader.load(
+  'https://static.zollege.in/public/college_data/images/campusimage/17473099531463566740campus1.jpeg?tr=h-313,w-700,c-force',
+  function(tex){ photoMat.map = tex; photoMat.color.set(0xffffff); photoMat.needsUpdate = true; },
+  undefined,
+  function(){ /* photo failed to load (offline / blocked) — keep grey billboard, game still works */ }
+);
+const photoLabel = label('REAL PHOTO - CHITKARA UNIVERSITY');
+photoLabel.position.set(0, 10, -25); photoLabel.scale.set(14, 3.5, 1);
+scene.add(photoLabel);
+
 // The hole
 let holeRadius=1.5;
 const hole=new THREE.Mesh(new THREE.CircleGeometry(1,48), new THREE.MeshBasicMaterial({color:0x000000}));
